@@ -1,0 +1,45 @@
+version: '3.3'
+services:
+  db:
+    image: postgres:12.0-alpine
+    restart: always
+    hostname: db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=atrucks
+      - POSTGRES_PASSWORD=atrucks
+      - POSTGRES_DB=atrucks
+    expose:
+      - 5432
+
+  web:
+    build: .
+    restart: always
+
+    command: sh -c "python manage.py migrate &&
+                    python manage.py collectstatic &&
+                    python manage.py shell < adminuser.py &&
+                    gunicorn atrucks.wsgi:application --bind 0.0.0.0:8011"
+
+    volumes:
+      - static_volume:/usr/src/app/staticfiles
+
+    expose:
+      - 8011
+    depends_on:
+      - db
+
+  nginx:
+    build: ./nginx
+    restart: always
+    volumes:
+      - static_volume:/usr/src/app/staticfiles
+    ports:
+      - 8012:8012
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:

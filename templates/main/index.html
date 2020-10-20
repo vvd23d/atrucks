@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Информация о телефонных номерах
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-5">Информация о телефонных номерах:</h1>
+
+    {% if tels %}
+        8 {{ search_kod }} {{ search_nom }}<br>
+        {% for tel in tels %}
+            {{ tel.operator }}<br>{{ tel.region }} <br>
+        {% endfor %}
+    {% else %}
+        Нет данных {% if search_kod %} о номере 8 ({{ search_kod }}) {% if search_nom %} {{ search_nom }} {% endif %} {% endif %}
+    {% endif %}
+
+{% endblock %}
+
